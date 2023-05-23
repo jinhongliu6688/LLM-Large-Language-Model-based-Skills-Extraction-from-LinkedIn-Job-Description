@@ -40,25 +40,25 @@ After completing the data cleaning phase, we obtained a final set of 1,933 uniqu
 
 ##  Methods
 
-[*DistilBERT model:*](https://github.ubc.ca/MDS-CL-2022-23/COLX_585_GPT-5uperpowered_Sea_Urchins/blob/master/code/DistilBERT_base_cased.ipynb)
+[*DistilBERT model:*](code/DistilBERT_base_cased.ipynb)
 
 This was the least complex BERT based model that we implemented. We expected it to run the fastest and have a lower score relative to the other BERT based models. We received a F1 score of 0.370 with the DistilBERT model. We had used the auto-tokenizer for this model and the other 2 BERT models as well. We did not expect this model to perform any better as it is designed to be a lightweight model that is not as complex as the other models. Hence, it performs worse than the other 2 BERT models.
 
-[*BERT model:*](https://github.ubc.ca/MDS-CL-2022-23/COLX_585_GPT-5uperpowered_Sea_Urchins/blob/master/code/BERT_base_cased.ipynb)
+[*BERT model:*](code/BERT_base_cased.ipynb)
 
 We then used the default BERT model. We expected this model to outperform the DistilBERT model, but to under perform the RoBERTa model. We had issues with tokenization while implementing all 3 of the BERT models. We proceeded with the auto tokenizer for this one as well. We received an F1 score of 0.451 with the BERT model. This is aligned with our expectations as it outperforms the DistilBERT model and under performs the RoBERTa model.
 
-[*LSTM model:*](https://github.ubc.ca/MDS-CL-2022-23/COLX_585_GPT-5uperpowered_Sea_Urchins/blob/master/code/LSTM.ipynb)
+[*LSTM model:*](code/LSTM.ipynb)
  
 We used a single layer, bidirectional LSTM model with embedding size of 75 and hidden dimension size of 50. We trained the model for 20 epochs as we noticed that the "dev set" macro f1 score reaches a saturation point at 20 epochs. The f1 score for the skill recognition task is 0.44 and the macro f1 score for the tag classification task is 0.63.
 
-[*Flan T5 model:*](https://github.ubc.ca/MDS-CL-2022-23/COLX_585_GPT-5uperpowered_Sea_Urchins/blob/master/code/T5Flan_QA.ipynb)
+[*Flan T5 model:*](code/T5Flan_QA.ipynb)
 
 We used a sequence-to-sequence language model with the google/flan-t5-small checkpoint. We set the maximum input length to 128 and maximum target length to 64. The training data was preprocessed with the Flan T5 tokenizer using the preprocess_data function. We used Seq2SeqTrainer from the Hugging Face library for training with the following hyperparameters: batch size of 2, evaluation strategy of "steps" with evaluation every 1000 steps, logging strategy of "steps" with logging every 1 step, saving strategy of "steps" with saving every 1000 steps, learning rate of 4e-3, weight decay of 0.01, and 5 training epochs. During training, we used BLEU score to evaluate the model's progress because our outputs are token sequences and even partial matches can be valuable.
 
 To evaluate the model, we used the evaluate function which computed the precision, recall, and f1-score for the predicted skills against the gold standard skills. The function first converted the 'skills' and 'predicted_skills' columns to sets, then iterated through the sets to compute the true positive, gold count, and predicted count for each example. The precision, recall, and f1-score were then computed from these counts.
 
-[*RoBERTa model:*](https://github.ubc.ca/MDS-CL-2022-23/COLX_585_GPT-5uperpowered_Sea_Urchins/blob/master/code/RoBERTa.ipynb)
+[*RoBERTa model:*](code/RoBERTa.ipynb)
 
 The RoBERTa model performs better than the DistilBERT model and the BERT model. The F1 score is around 0.473. In the RoBERTa mode, the AutoTokenizer.from\_pretrained function is utilized to load a tokenizer from the Hugging Face model hub. In this instance, the tokenizer for "roberta-base" is loaded with the add\_prefix\_space=True parameter, which handles situations where a leading space is required before each input example in the language model. For token classification tasks, the DataCollatorForTokenClassification class is employed to gather and preprocess the data. It takes the tokenizer as input to manage the tokenization and padding of input sequences. To load a pre-trained model for token classification, the AutoModelForTokenClassification.from\_pretrained method is used. In this scenario, the "roberta-base" model is loaded with the num\_labels=3 parameter, indicating the number of labels (classes) in the token classification task. Additionally, id2label and label2id mappings are required to convert between label indices and their corresponding string labels. The TrainingArguments class is responsible for defining the training arguments and hyperparameters. It encompasses various settings such as the output directory for saving the trained model, learning rate = 2e-5, per\_device\_train\_batch\_size and per\_device\_eval\_batch\_size are set to 4, weight\_decay is set to 0.01. The load\_best\_model\_at\_end parameter is set to True to load the best model at the end of training. The number of epochs, as specified in the TrainingArguments, is set to 2. This means that the training process will iterate over the entire training dataset twice.
 
